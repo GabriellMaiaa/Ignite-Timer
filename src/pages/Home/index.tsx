@@ -17,18 +17,30 @@ import {
 
 const newCycleFormSchema = zod.object({
   task: zod.string().min(1, 'Informe a tarefa'),
-  minutesAmount: zod.number().min(5).max(60),
+  minutesAmount: zod
+    .number()
+    .min(5, 'O ciclo precisa ser de no mínimo 5 minutos')
+    .max(60, 'O ciclo precisa ser de no máximo 60 minutos'),
 })
+
+interface NewCycleFormData {
+  task: string
+  minutesAmount: number
+}
 
 export function Home() {
   const { register, handleSubmit, watch } = useForm({
     resolver: zodResolver(newCycleFormSchema),
+    defaultValues: {
+      task: '',
+      minutesAmount: 0,
+    },
   })
 
-  function handleCreateNewCycle(data: any) {
+  function handleCreateNewCycle(data: NewCycleFormData) {
     console.log(data)
   }
-  const task = watch('task')
+  const task = watch('task') // controlled components
   const isSubmitDisabled = !task
 
   return (
@@ -55,7 +67,7 @@ export function Home() {
             step={5}
             min={5}
             max={60}
-            {...register('minutesAmount', { valueAsNumber: true })}
+            {...register('minutesAmount', { valueAsNumber: true })} // Esse nome vem do id
           />
           <span>minutos</span>
         </FormContainer>

@@ -27,6 +27,7 @@ const newCycleFormSchema = zod.object({
 interface NewCycleFormData {
   task: string
   minutesAmount: number
+  id: string
 }
 
 interface Cycle {
@@ -37,6 +38,7 @@ interface Cycle {
 export function Home() {
   const [cycles, setCycles] = useState<Cycle[]>([])
   const [activeCycleId, setActiveCycleId] = useState<string | null>(null)
+  const [amountSecondPassed, setAmountSecondPassed] = useState(0)
 
   const { register, handleSubmit, watch, reset } = useForm<NewCycleFormData>({
     resolver: zodResolver(newCycleFormSchema),
@@ -47,8 +49,9 @@ export function Home() {
   })
 
   function handleCreateNewCycle(data: NewCycleFormData) {
+    const id = String(new Date().getTime())
     const newCycle: Cycle = {
-      id,
+      id: String(new Date().getTime()),
       task: data.task,
       minutesAmount: data.minutesAmount,
     }
@@ -59,6 +62,16 @@ export function Home() {
   }
 
   const activeCycle = cycles.find((cycle) => cycle.id === activeCycleId)
+
+  const totalSeconds = activeCycle ? activeCycle.minutesAmount * 60 : 0
+  const currentSeconds = activeCycle ? totalSeconds - amountSecondPassed : 0
+
+  const minutesAmount = Math.floor(currentSeconds / 60)
+  const secondAmount = currentSeconds % 60
+
+  const minutes = String(minutesAmount).padStart(2, '0') // Essa função faz com que baseado na quant de char que vc colocar,
+  // mostre um numero quandom não houver
+  const seconds = String(secondAmount).padStart(2, '0')
 
   console.log(activeCycle)
 
@@ -95,11 +108,11 @@ export function Home() {
         </FormContainer>
 
         <CountdownContainer>
-          <span>0</span>
-          <span>0</span>
+          <span>{minutes[0]}</span>
+          <span>{minutes[1]}</span>
           <Separator>:</Separator>
-          <span>0</span>
-          <span>0</span>
+          <span>{seconds[0]}</span>
+          <span>{seconds[1]}</span>
         </CountdownContainer>
 
         <StartCountdownButton type="submit" disabled={isSubmitDisabled}>

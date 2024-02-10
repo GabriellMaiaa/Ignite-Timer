@@ -93,7 +93,12 @@ export function Home() {
   // mostre um numero quandom não houver
   const seconds = String(secondAmount).padStart(2, '0')
 
-  console.log(activeCycle)
+  useEffect(() => {
+    // Função que transforma o titulo da pagina no nosso timer
+    if (activeCycle) {
+      document.title = `${minutes}:${seconds}`
+    }
+  }, [minutes, seconds])
 
   const task = watch('task') // controlled components
   const isSubmitDisabled = !task
